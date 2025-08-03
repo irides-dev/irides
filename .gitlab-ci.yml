@@ -1,16 +1,29 @@
-# You can override the included template(s) by including variable overrides
-# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
-# Secret Detection customization: https://docs.gitlab.com/user/application_security/secret_detection/pipeline/configure
-# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
-# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
-# Note that environment variables can be set in several places
-# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+# -------------------------------------------------------------------
+# GitLab CI/CD recipe for the elliptical-distribution-toolkit package
+# -------------------------------------------------------------------
+
+# build off of miniconda3
+image: continuumio/miniconda3
+
+# add relevant packages
+before_script:
+  - conda update -n base -c defaults conda
+  - conda install --yes --show-channel-urls coverage flake8 numpy
+  - pip install -e .  # Install package in development mode
+
+# call out pipeline stages
 stages:
-- test
-- secret-detection
-variables:
-  SECRET_DETECTION_ENABLED: 'true'
-secret_detection:
-  stage: secret-detection
-include:
-- template: Security/Secret-Detection.gitlab-ci.yml
+  - test_and_cov
+
+# test and run coverage on the repo source code
+# note: GitLab test-coverage-parsing regex is '^TOTAL(\s+\d+)*(\s)+(\d+\%)$',
+#       which simply picks the COV% value from the coverage report.
+# note: `discover` requires tests/ to be importable as a package, therefore
+#       __init__.py files are included along that tree.
+test_and_cov_src:
+  stage: test_and_cov
+  coverage: '/TOTAL.*\s+(\d+%)$/'
+  script:
+    - python -m unittest discover -v
+    - coverage run --source=src --branch -m unittest && coverage report -m
+

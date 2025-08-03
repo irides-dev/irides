@@ -21,7 +21,7 @@ filename = "conda-forge.recipe/meta.yaml"
 
 [tool.black]
 line-length = 80
-target-version = ['py38', 'py39', 'py310', 'py311', 'py312', 'py13']
+target-version = ['py38', 'py39', 'py310', 'py311', 'py312', 'py313']
 include = '\.pyi?$'
 exclude = '''
 /(

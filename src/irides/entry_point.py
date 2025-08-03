@@ -1,13 +1,13 @@
 """
 -------------------------------------------------------------------------------
 
-`irides` package top-level import
+Simple module for the irides package
 
 -------------------------------------------------------------------------------
 """
 
-# AUTO-GENERATED version
-__version__ = "0.0.1"
 
-# Import the toolkit function
-from .entry_point import get_name
+def get_name() -> str:
+    """Return package name."""
+
+    return "I am irides"
