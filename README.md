@@ -1,7 +1,7 @@
 <img src="https://gitlab.com/irides-dev/irides/raw/main/images/irides-tile-logo.1500px.png" alt="irides-logo" height="150"> 
 
 
-# Elliptical-Distribution Toolkit
+# Reference Implementations for LTI Filters
 
 [![pipeline status](https://gitlab.com/irides-dev/irides/badges/main/pipeline.svg)](https://gitlab.com/irides-dev/irides/pipelines)
 [![coverage report](https://gitlab.com/irides-dev/irides/badges/main/coverage.svg)](https://gitlab.com/irides-dev/irides/commits/main)
