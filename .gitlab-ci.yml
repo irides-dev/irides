@@ -1,5 +1,5 @@
 # -------------------------------------------------------------------
-# GitLab CI/CD recipe for the elliptical-distribution-toolkit package
+# GitLab CI/CD recipe for the irides  package
 # -------------------------------------------------------------------
 
 # build off of miniconda3
@@ -11,9 +11,14 @@ before_script:
   - conda install --yes --show-channel-urls coverage flake8 numpy
   - pip install -e .  # Install package in development mode
 
+# def vars
+variables:
+  SECRET_DETECTION_ENABLED: 'true'
+
 # call out pipeline stages
 stages:
   - test_and_cov
+  - secret-detection
 
 # test and run coverage on the repo source code
 # note: GitLab test-coverage-parsing regex is '^TOTAL(\s+\d+)*(\s)+(\d+\%)$',
@@ -26,4 +31,11 @@ test_and_cov_src:
   script:
     - python -m unittest discover -v
     - coverage run --source=src --branch -m unittest && coverage report -m
+
+# check for secrets
+secret_detection:
+  stage: secret-detection
+
+include:
+- template: Security/Secret-Detection.gitlab-ci.yml
 
