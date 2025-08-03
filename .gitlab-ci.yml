@@ -1,17 +1,18 @@
 # -------------------------------------------------------------------
-# GitLab CI/CD recipe for the irides  package
+# GitLab CI/CD recipe for the irides package
 # -------------------------------------------------------------------
 
 # build off of miniconda3
 image: continuumio/miniconda3
 
 # add relevant packages
-before_script:
-  - conda update -n base -c defaults conda
-  - conda install --yes --show-channel-urls coverage flake8 numpy
-  - pip install -e .  # Install package in development mode
+default:
+  before_script:
+    - conda update -n base -c defaults conda
+    - conda install --yes --show-channel-urls coverage flake8 numpy
+    - pip install -e .  # Install package in development mode
 
-# def vars
+# define variables
 variables:
   SECRET_DETECTION_ENABLED: 'true'
 
@@ -21,10 +22,6 @@ stages:
   - secret-detection
 
 # test and run coverage on the repo source code
-# note: GitLab test-coverage-parsing regex is '^TOTAL(\s+\d+)*(\s)+(\d+\%)$',
-#       which simply picks the COV% value from the coverage report.
-# note: `discover` requires tests/ to be importable as a package, therefore
-#       __init__.py files are included along that tree.
 test_and_cov_src:
   stage: test_and_cov
   coverage: '/TOTAL.*\s+(\d+%)$/'
@@ -32,10 +29,11 @@ test_and_cov_src:
     - python -m unittest discover -v
     - coverage run --source=src --branch -m unittest && coverage report -m
 
-# check for secrets
+# override defaults for the secret detection job
 secret_detection:
   stage: secret-detection
+  before_script: []  # Prevent conda-related setup
+  image: registry.gitlab.com/security-products/secrets:7
 
 include:
-- template: Security/Secret-Detection.gitlab-ci.yml
-
+  - template: Security/Secret-Detection.gitlab-ci.yml
