@@ -1,0 +1,21 @@
+# --------------------
+# git-exclusions
+# --------------------
+
+# python
+*.pyc
+**/.cache
+
+# package and distribution
+.pypirc
+**/.coverage
+**/htmlcov
+**/dist/
+**.egg-info
+
+# OS related
+.DS_Store
+
+# pycharm related
+**/.idea
+**/.agent-reports

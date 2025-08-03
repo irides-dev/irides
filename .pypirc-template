@@ -1,0 +1,24 @@
+# PyPi rc (template) file to locally store API tokens.
+# Remove the -template suffix, place this file in ~/.pypirc,
+# fill in the API tokens from the pypi and testpypi accounts,
+# and exec `$ chmod 600 ~/.pypirc` for security.
+
+# To upload with twine, exec either
+#  $ twine upload --repository testpypi_irides dist/<tar-file>
+#  $ twine upload --repository pypi_irides dist/<tar-file>
+
+[distutils]
+index-servers =
+  testpypi_irides
+  pypi_irides
+
+[testpypi_irides]
+  repository = https://test.pypi.org/legacy/
+  username = __token__
+  password = pypi-YOUR_TEST_API_TOKEN_HERE
+
+[pypi_irides]
+  repository = https://upload.pypi.org/legacy/
+  username = __token__
+  password = pypi-YOUR_API_TOKEN_HERE
+

@@ -1,0 +1,26 @@
+#!/bin/sh
+#
+# Commit-msg hook to enforce commit format 'issue #[number]: <msg>'.
+# Copy this file to $ROOT/.git/hooks/commit-msg
+#
+
+# regex
+commit_regex='^issue #[0-9]+: .*'
+commit_message=$(cat "$1")
+
+# validate commit-msg pattern of die
+if ! echo "$commit_message" | grep -qE "$commit_regex"; then
+    echo "❌ Invalid commit message format"
+    echo ""
+    echo "Commit messages must start with 'issue #[number] '"
+    echo ""
+    echo "Example:"
+    echo "  - issue #354 tie your commit to a ticket"
+    echo ""
+    echo "Your commit message: '$commit_message'"
+    echo ""
+    exit 1
+fi
+
+# return no error
+exit 0

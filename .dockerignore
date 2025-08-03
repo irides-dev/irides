@@ -1,0 +1,23 @@
+# Largely the same as .gitignore, but ignore .git, too.
+
+# git
+**/.git
+.gitignore
+.gitattributes
+
+# python
+*.pyc
+**/.cache
+
+# package and distribution
+**/.coverage
+**/htmlcov
+**/dist
+**.egg-info
+
+# mac
+.DS_Store
+
+# pychmrm
+**/.idea
+**/.agent-reports

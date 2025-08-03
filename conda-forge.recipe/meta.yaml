@@ -1,0 +1,43 @@
+{% set name = "irides" %}
+{% set version = "0.0.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  # sha256: "TODO: update after PyPi upload"
+
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python >=3.7
+  run:
+    - numpy >=1.23
+    - python >=3.7
+
+test:
+  imports:
+    - irides
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  home: "https://gitlab.com/irides-dev/irides"
+  license: Apache-2.0
+  license_family: "APACHE"
+  license_file: LICENSE
+  summary: Reference library for advanced eigenanalysis.
+  dev_url: https://gitlab.com/irides-dev/irides
+
+extra:
+  recipe-maintainers:
+    - jaydamask
