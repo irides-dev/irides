@@ -187,7 +187,7 @@ class TestLevelFilters(unittest.TestCase):
         params = {
             "bessel": {"precision": 3},
             "pema": {"precision": 4},
-            "mbox": {"precision": 4},
+            "mbox": {"precision": 3},
         }
 
         # defs
