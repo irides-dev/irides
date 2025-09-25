@@ -9,7 +9,7 @@ image: continuumio/miniconda3
 default:
   before_script:
     - conda update -n base -c defaults conda
-    - conda install --yes --show-channel-urls coverage flake8 numpy
+    - conda install --yes --show-channel-urls coverage flake8 numpy scipy
     - pip install -e .  # Install package in development mode
 
 # define variables
