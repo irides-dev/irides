@@ -1,0 +1,295 @@
+#!/usr/bin/env python3
+"""
+Publisher of the irides-cabinet to the irides repo via rsync. Both src
+and dest repos must be clean unless forced via --force.
+
+Example usage:
+  ./environment/publish/publish-to-irides --publish-path /path/to/irides
+  ./environment/publish/publish-to-irides --dry-run --publish-path /path/to/irides
+  ./environment/publish/publish-to-irides --force --publish-path /path/to/irides
+
+Intended usage:
+  $ ./environment/publish/publish-to-irides --clean-up --dry-run --publish-path /path/to/irides
+  $ ./environment/publish/publish-to-irides --clean-up --publish-path /path/to/irides
+"""
+
+import argparse
+import json
+import logging
+import os
+import shlex
+import shutil
+import subprocess
+import sys
+from datetime import datetime, timezone
+from typing import List
+
+
+logger = logging.getLogger("publish-to-irides")
+
+
+def dispatch(dest_path: str, dry_run: bool, force: bool, clean_up: bool) -> int:
+    """Publishes the irides-cabinet to the irides repo via rsync."""
+
+    # src-path
+    #   derive the src-path based on this repo
+    impulse_path = capture_git_output_or_die(
+        ["git", "rev-parse", "--show-toplevel"]
+    )
+    src_path = os.path.join(impulse_path, "code/irides-cabinet")
+
+    #   check that impulse repo is clean, else abort unless forced
+    verify_repo_status_or_die(src_path, force=force)
+
+    # dest-path
+    #   check destination existence
+    if not os.path.isdir(dest_path):
+        logger.error(f"Publish path does not exist: '{dest_path}'")
+        return 2
+
+    #   check that dest repo is clean, else abort unless forced
+    verify_repo_status_or_die(dest_path, force=force)
+
+    # log
+    logger.info(f"impulse-path: {impulse_path}")
+    logger.info(f"src-path verified: {src_path}")
+    logger.info(f"dest-path verified: {dest_path}")
+
+    # version
+    #   prepare version details
+    version_payload = prepare_version_payload(src_path)
+
+    #   write the .version file
+    write_version_file(src_path, version_payload)
+
+    # rsync
+    rsync_path = shutil.which("rsync")
+    exclusions = [".git", ".idea", "dist", ".DS_Store", "__pycache__"]
+    rsync_cmd = [
+        rsync_path,
+        "-avh",
+        "--delete",
+    ]
+    if dry_run:
+        rsync_cmd.extend(["--dry-run"])
+    for exclusion in exclusions:
+        rsync_cmd.extend(["--exclude", exclusion])
+    rsync_cmd.extend(
+        [
+            f"{src_path}/",
+            f"{dest_path}/",
+        ]
+    )
+
+    rsync_str = " ".join(shlex.quote(part) for part in rsync_cmd)
+    logger.info(f"rsync-cmd: {rsync_str}")
+
+    # rsync call
+    if not force:
+        res = subprocess.run(
+            rsync_cmd, check=True, capture_output=True, text=True
+        )
+        logger.info("rsync stdout:\n%s", res.stdout)
+        logger.info("rsync stderr:\n%s", res.stderr)
+    else:
+        logger.warning("will not run rsync due to --force")
+
+    # clean up if requested
+    if clean_up:
+        remove_version_file(src_path)
+
+    return 0
+
+
+def get_version_file_name() -> str:
+    """Get the version file name."""
+
+    return ".version"
+
+
+def get_current_package_version(src_path: str) -> str:
+    """Return the current irides package version by importing irides from src"""
+
+    try:
+        # Build the python one-liner
+        code = (
+            "import sys; "
+            "sys.path.insert(0, 'src'); "
+            "import irides; "
+            "print(irides.__version__)"
+        )
+        res = subprocess.run(
+            [sys.executable, "-c", code],
+            cwd=src_path,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return res.stdout.strip()
+    except subprocess.CalledProcessError as py_err:
+        logger.error("Failed to determine package version: %s", py_err)
+        sys.exit(2)
+
+
+def verify_repo_status_or_die(repo_path: str, force: bool) -> None:
+    """Verifies that the repo is clean before continuing, if not forced"""
+
+    repo_status = capture_git_output_or_die(
+        ["git", "-C", repo_path, "status", "--porcelain"]
+    )
+    if repo_status:
+        logger.warning(f"This repo is dirty: '{repo_path}'")
+        if force:
+            logger.warning(
+                "Proceeding with publish despite dirty repo due to --force"
+            )
+        else:
+            logger.error(
+                "The repo is dirty -- aborting publish (use --force to override)"
+            )
+            sys.exit(1)
+
+
+def prepare_version_payload(src_path: str) -> dict:
+    """Invokes subprocess calls to capture git details into a version payload."""
+
+    # Resolve git commit hash from the project root
+    publisher_name = capture_git_output_or_die(
+        ["git", "-C", src_path, "config", "--get", "user.name"]
+    )
+    source_origin = capture_git_output_or_die(
+        [
+            "git",
+            "-C",
+            src_path,
+            "remote",
+            "get-url",
+            "origin",
+        ]
+    )
+    source_commit_hash = capture_git_output_or_die(
+        ["git", "-C", src_path, "rev-parse", "--short", "HEAD"]
+    )
+    publish_time_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    # Get the current package version from src/irides/__init__.py
+    package_version = get_current_package_version(src_path)
+
+    version_payload = {
+        "publisher_name": publisher_name,
+        "source_repo": source_origin,
+        "source_path": "code/irides-cabinet",
+        "source_commit": source_commit_hash,
+        "package_version": package_version,
+        "publish_time_utc": publish_time_utc,
+    }
+
+    return version_payload
+
+
+def write_version_file(src_path, version_payload: dict) -> None:
+
+    # calculate the version path
+    version_path = os.path.join(src_path, get_version_file_name())
+
+    # write
+    try:
+        with open(version_path, "w", encoding="utf-8") as f:
+            json.dump(version_payload, f, indent=2)
+            f.write("\n")
+        logger.info("Wrote version file: %s", version_path)
+
+    except Exception as e:
+        msg = f"Failed to write version file: {version_path}"
+        logger.error("%s: %s", msg, e)
+        sys.exit(2)  # Exit with error code 2
+
+
+def remove_version_file(src_path) -> None:
+    """Remove the version file"""
+
+    # calculate the version path
+    version_path = os.path.join(src_path, get_version_file_name())
+
+    # remove if exists
+    if os.path.exists(version_path):
+        try:
+            os.remove(version_path)
+            logger.info("Removed version file: %s", version_path)
+        except OSError as e:
+            logger.error(
+                "Failed to remove version file %s: %s", version_path, e
+            )
+            sys.exit(1)
+    else:
+        logger.info("Version file does not exist")
+
+
+def capture_git_output_or_die(planned_cmd: List[str]) -> str:
+    """Encapsulates git-capture commands"""
+    try:
+        res = subprocess.run(
+            planned_cmd, capture_output=True, text=True, check=True
+        )
+        res_string = res.stdout.strip()
+        return res_string
+    except subprocess.CalledProcessError as git_err:
+        cmd_str = " ".join(shlex.quote(p) for p in planned_cmd)
+        logger.error("Command failed: %s\n%s", cmd_str, git_err)
+        sys.exit(2)
+
+
+def parse_args(argv: List[str] | None = None) -> argparse.Namespace:
+    """Parse-args config"""
+
+    parser = argparse.ArgumentParser(
+        prog="publish-to-irides",
+        description=(
+            "Publishes the irides-cabinet to the irides repo via rsync"
+        ),
+    )
+    parser.add_argument(
+        "--publish-path",
+        required=True,
+        help="Path to the target path where the cabinet should be published.",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Preview the planned actions without making any changes.",
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Caution: proceed even if the git repository has uncommitted changes.",
+    )
+    parser.add_argument(
+        "--clean-up",
+        action="store_true",
+        help="Remove the version file after publishing.",
+    )
+
+    return parser.parse_args(argv)
+
+
+def main(argv: List[str] | None = None) -> int:
+    """Runner for publish-to-irides"""
+
+    # Basic console logging suitable for a CLI
+    if not logging.getLogger().handlers:
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(levelname)s: %(message)s",
+            stream=sys.stderr,
+        )
+
+    # config parse args
+    args = parse_args(argv)
+
+    # call dispatch after cmdline args are managed
+    dest_path = os.path.abspath(os.path.expanduser(args.publish_path))
+    return dispatch(dest_path, args.dry_run, args.force, args.clean_up)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,80 @@
+"""
+-------------------------------------------------------------------------------
+
+Digital poly-ema inline-slope filter design.
+
+-------------------------------------------------------------------------------
+"""
+
+import numpy as np
+
+from irides.design.analog import polyema_inline_slope as dsgn_alg_s_pema
+from irides.design.digital import polyema_level as dsgn_dig_l_pema
+from irides.tools import design_tools
+
+
+def design_id() -> str:
+    """Design id of this filter."""
+
+    return "digital-{0}".format(dsgn_alg_s_pema.design_id())
+
+
+def design_type() -> design_tools.FilterDesignType:
+    """This is a slope filter"""
+
+    return dsgn_alg_s_pema.design_type()
+
+
+def get_valid_filter_orders(strict: bool = False) -> np.ndarray:
+    """Returns valid filter orders for this filter design."""
+
+    return dsgn_alg_s_pema.get_valid_filter_orders(strict)
+
+
+def minimum_mu_value(filter_order: int) -> float:
+    """Returns the minimum mu value for a given filter order"""
+
+    return dsgn_dig_l_pema.minimum_mu_value(filter_order)
+
+
+def initial_hn_values(mu: float, filter_order: int) -> np.ndarray:
+    """Returns analytically calculated values of h[0], h[1], and h[2]
+
+    Since this is an inline-slope filter, h[k] values can be derived from
+    the associated level-filter h[k] values.
+    """
+
+    # retrieve level-filter hk values
+    hk_level = dsgn_dig_l_pema.initial_hn_values(mu, filter_order)
+
+    # compute hk_slope values
+    h0 = hk_level[0]
+    h1 = hk_level[1] - hk_level[0]
+    h2 = hk_level[2] - hk_level[1]
+
+    # pack and return
+    return np.array([h0, h1, h2])
+
+
+# noinspection PyPep8Naming
+def moment_values(mu: float, filter_order: int) -> np.ndarray:
+    """Returns analytically calculated moment values (M0, M1, M2)
+
+    In general, for an inline-slope filter,
+        M0 = 0
+        M1 = -H(1)
+        M2 = 2H'(1) - H(1).
+    Rather than calculate H^k(1) terms again, they can be backed out from
+    the level-filter calculations.
+    """
+
+    # retrieve level-filter Mk values
+    Mk_level = dsgn_dig_l_pema.moment_values(mu, filter_order)
+
+    # convert Mk_level values to Mk_slope values
+    M0 = 0
+    M1 = -Mk_level[0]
+    M2 = -2.0 * Mk_level[1] - Mk_level[0]
+
+    # pack and return
+    return np.array([M0, M1, M2])

@@ -9,9 +9,9 @@
 # package and distribution
 .pypirc
 **/.coverage
-**/htmlcov
-**/dist/
 **.egg-info
+**/dist/
+**/htmlcov
 
 # OS related
 .DS_Store

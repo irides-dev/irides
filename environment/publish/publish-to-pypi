@@ -1,0 +1,5 @@
+#!/bin/bash
+# script to upload irides to PyPi as per the current version number
+
+VERSION=$(python -c "import sys; sys.path.insert(0, 'src'); import irides; print(irides.__version__)")
+python -m twine upload dist/irides-${VERSION}*
