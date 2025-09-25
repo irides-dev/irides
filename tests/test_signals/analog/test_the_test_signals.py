@@ -38,7 +38,7 @@ class TestTheTestSignals(unittest.TestCase):
                 list(np.zeros_like(ts[(1 + i_t0_plus) :, 1])),
             )
 
-        test_for_zeros_for_negative_time(self, ts, i_t0_plus)
+        _test_for_zeros_for_negative_time(self, ts, i_t0_plus)
 
     def test_step(self):
 
@@ -51,7 +51,7 @@ class TestTheTestSignals(unittest.TestCase):
                 list(ts[i_t0_plus:, 1]), list(np.ones_like(ts[i_t0_plus:, 1]))
             )
 
-        test_for_zeros_for_negative_time(self, ts, i_t0_plus)
+        _test_for_zeros_for_negative_time(self, ts, i_t0_plus)
 
     def test_ramp(self):
 
@@ -64,7 +64,7 @@ class TestTheTestSignals(unittest.TestCase):
         with self.subTest(msg="t>=0 timespan"):
             self.assertSequenceEqual(list(ts[i_t0_plus:, 1]), list(x_axis))
 
-        test_for_zeros_for_negative_time(self, ts, i_t0_plus)
+        _test_for_zeros_for_negative_time(self, ts, i_t0_plus)
 
     def test_parabola(self):
 
@@ -77,7 +77,7 @@ class TestTheTestSignals(unittest.TestCase):
         with self.subTest(msg="t>=0 timespan"):
             self.assertSequenceEqual(list(ts[i_t0_plus:, 1]), list(x_axis))
 
-        test_for_zeros_for_negative_time(self, ts, i_t0_plus)
+        _test_for_zeros_for_negative_time(self, ts, i_t0_plus)
 
     def test_alternating(self):
 
@@ -94,7 +94,7 @@ class TestTheTestSignals(unittest.TestCase):
         with self.subTest(msg="t>=0 timespan"):
             self.assertSequenceEqual(list(ts[i_t0_plus:, 1]), list(x_axis))
 
-        test_for_zeros_for_negative_time(self, ts, i_t0_plus)
+        _test_for_zeros_for_negative_time(self, ts, i_t0_plus)
 
     def test_white_noise(self):
 
@@ -106,7 +106,7 @@ class TestTheTestSignals(unittest.TestCase):
             self.assertTrue(np.abs(np.mean(ts[i_t0_plus:, 1])) < 0.25, 1)
             self.assertTrue(0.9 <= np.std(ts[i_t0_plus:, 1]) <= 1.1, 1)
 
-        test_for_zeros_for_negative_time(self, ts, i_t0_plus)
+        _test_for_zeros_for_negative_time(self, ts, i_t0_plus)
 
     def test_unknown(self):
 
@@ -118,10 +118,10 @@ class TestTheTestSignals(unittest.TestCase):
             self.assertSequenceEqual(
                 list(ts[i_t0_plus:, 1]), list(np.zeros_like(ts[i_t0_plus:, 1]))
             )
-        test_for_zeros_for_negative_time(self, ts, i_t0_plus)
+        _test_for_zeros_for_negative_time(self, ts, i_t0_plus)
 
 
-def test_for_zeros_for_negative_time(this, ts: np.ndarray, i_t0_plus: int):
+def _test_for_zeros_for_negative_time(this, ts: np.ndarray, i_t0_plus: int):
 
     with this.subTest(msg="t<0 timespan"):
         this.assertSequenceEqual(

@@ -1,0 +1,23 @@
+# package file for a conda python environment
+
+name: irides
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.13
+  - coverage
+  - flake8
+  - flake8-black
+  - grayskull
+  - json5
+  - more-itertools
+  - nb_conda
+  - numdifftools
+  - numpy
+  - pandas
+  - parameterized
+  - pip
+  - quadprog
+  - scipy
+  - thucyd

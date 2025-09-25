@@ -86,7 +86,7 @@ def generate_transfer_function(fstart, fend, df):
     panel[:, 0] = [v * df + fstart for v in range(npts)]
 
     # compute the complex transfer function along the /jw/ axis
-    jw = 1j * 2.0 * np.math.pi * panel[:, 0]
+    jw = 1j * 2.0 * np.pi * panel[:, 0]
 
     with np.errstate(divide="ignore", invalid="ignore"):
         panel[:, 1] = 1.0 / jw

@@ -32,10 +32,11 @@ class TestTheTestSignals(unittest.TestCase):
             self.assertAlmostEqual(ds.v_axis[ds.i_n_zero], 1.0, self.precision)
             test_values = ds.v_axis[1 + ds.i_n_zero :]
             self.assertSequenceEqual(
-                list(test_values), list(np.zeros_like(test_values)),
+                list(test_values),
+                list(np.zeros_like(test_values)),
             )
 
-        test_for_zeros_on_negative_indices(self, ds)
+        _test_for_zeros_on_negative_indices(self, ds)
 
     def test_unit_step(self):
 
@@ -49,7 +50,7 @@ class TestTheTestSignals(unittest.TestCase):
                 list(test_values), list(np.ones_like(test_values))
             )
 
-        test_for_zeros_on_negative_indices(self, ds)
+        _test_for_zeros_on_negative_indices(self, ds)
 
     def test_ramp(self):
 
@@ -62,7 +63,7 @@ class TestTheTestSignals(unittest.TestCase):
             test_values = ds.v_axis[ds.i_n_zero :]
             self.assertSequenceEqual(list(test_values), list(soln_seq))
 
-        test_for_zeros_on_negative_indices(self, ds)
+        _test_for_zeros_on_negative_indices(self, ds)
 
     def test_parabola(self):
 
@@ -76,7 +77,7 @@ class TestTheTestSignals(unittest.TestCase):
             test_values = ds.v_axis[ds.i_n_zero :]
             self.assertSequenceEqual(list(test_values), list(soln_seq))
 
-        test_for_zeros_on_negative_indices(self, ds)
+        _test_for_zeros_on_negative_indices(self, ds)
 
     def test_alternating(self):
 
@@ -88,15 +89,17 @@ class TestTheTestSignals(unittest.TestCase):
             # n even -> +1
             test_values = ds.v_axis[ds.i_n_zero :: 2]
             self.assertSequenceEqual(
-                list(test_values), list(np.ones_like(test_values)),
+                list(test_values),
+                list(np.ones_like(test_values)),
             )
             # n odd -> -1
             test_values = ds.v_axis[1 + ds.i_n_zero :: 2]
             self.assertSequenceEqual(
-                list(test_values), list(-1.0 * np.ones_like(test_values)),
+                list(test_values),
+                list(-1.0 * np.ones_like(test_values)),
             )
 
-        test_for_zeros_on_negative_indices(self, ds)
+        _test_for_zeros_on_negative_indices(self, ds)
 
     def test_white_noise(self):
 
@@ -110,7 +113,7 @@ class TestTheTestSignals(unittest.TestCase):
             self.assertTrue(np.abs(np.mean(test_values)) < 0.1)
             self.assertTrue(0.9 <= np.std(test_values) <= 1.1)
 
-        test_for_zeros_on_negative_indices(self, ds)
+        _test_for_zeros_on_negative_indices(self, ds)
 
     def test_unknown(self):
 
@@ -121,13 +124,14 @@ class TestTheTestSignals(unittest.TestCase):
         with self.subTest(msg="n>=0 span"):
             test_values = ds.v_axis[ds.i_n_zero :]
             self.assertSequenceEqual(
-                list(test_values), list(np.zeros_like(test_values)),
+                list(test_values),
+                list(np.zeros_like(test_values)),
             )
 
-        test_for_zeros_on_negative_indices(self, ds)
+        _test_for_zeros_on_negative_indices(self, ds)
 
 
-def test_for_zeros_on_negative_indices(this, ds: DiscreteSequence):
+def _test_for_zeros_on_negative_indices(this, ds: DiscreteSequence):
 
     values_on_neg_indices = ds.v_axis[: ds.i_n_zero]
     with this.subTest(msg="n<0 span"):

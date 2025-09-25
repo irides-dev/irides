@@ -30,7 +30,7 @@ setup(
     name="irides",
     url="https://gitlab.com/irides-dev/irides",
     # key meta
-    version="1.0.1",
+    version="1.0.2",
     license="Apache License 2.0",
     description="""Irides provides references implementations for select linear time-invariant filters.""",
     long_description=read("README.md"),
