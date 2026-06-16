@@ -224,7 +224,7 @@ def compute_mu_from_tau_and_splane_poles(
 
     # compute and return
     return np.sum(
-        np.real(1.0 / (np.exp(-np.outer(splane_poles * T, 1.0 / tau)) - 1.0)),
+        np.real(1.0 / (np.exp(-np.outer(splane_poles * T, 1.0 / float(tau))) - 1.0)),
         axis=0,
     )
 

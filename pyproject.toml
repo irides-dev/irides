@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "irides"
-version = "1.0.3"
+version = "1.0.4"
 description = "Reference implementations for select linear time-invariant filters"
 readme = "README.md"
 license = {text = "MIT"}
@@ -31,7 +31,7 @@ where = ["src"]
 #------------------------------------------------------------------------------
 
 [tool.bumpversion]
-current_version = "1.0.3"
+current_version = "1.0.4"
 commit = false
 tag = false
 message = "Version updated from {current_version} to {new_version}"

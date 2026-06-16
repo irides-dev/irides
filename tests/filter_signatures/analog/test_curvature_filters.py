@@ -164,8 +164,8 @@ class TestInlineCurvatureFilters(unittest.TestCase):
             with self.subTest(msg="order: {0}, lobe imbalance".format(order)):
 
                 # imbalance of principal positive lobes
-                A_pos_l = np.trapz(h[: i_cand[0]]) * dt
-                A_pos_r = np.trapz(h[i_cand[1] :]) * dt
+                A_pos_l = np.trapezoid(h[: i_cand[0]]) * dt
+                A_pos_r = np.trapezoid(h[i_cand[1] :]) * dt
                 imb_test = A_pos_l / A_pos_r
 
                 precision = params[self.f_type]["precision"]

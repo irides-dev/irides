@@ -19,3 +19,4 @@
 # pycharm related
 **/.idea
 **/.agent-reports
+job-*.log
