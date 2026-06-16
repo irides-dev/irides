@@ -1,11 +1,37 @@
 # irides project configuration
 
 [build-system]
-requires = ["setuptools>=42", "wheel"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
+#------------------------------------------------------------------------------
+# project details
+
+[project]
+name = "irides"
+version = "1.0.3"
+description = "Reference implementations for select linear time-invariant filters"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [{email = "jaydamask@buell-lane-press.co"}]
+
+dependencies = [
+    "numpy>=1.23",
+    "scipy",
+]
+
+[project.optional-dependencies]
+testing = ["parameterized"]
+dev = ["setuptools", "bump-my-version"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+#------------------------------------------------------------------------------
+
 [tool.bumpversion]
-current_version = "1.0.2"
+current_version = "1.0.3"
 commit = false
 tag = false
 message = "Version updated from {current_version} to {new_version}"
@@ -21,7 +47,7 @@ filename = "conda-forge.recipe/meta.yaml"
 
 [tool.black]
 line-length = 80
-target-version = ['py38', 'py39', 'py310', 'py311', 'py312', 'py313']
+target-version = ['py310', 'py311', 'py312', 'py313']
 include = '\.pyi?$'
 exclude = '''
 /(

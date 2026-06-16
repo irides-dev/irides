@@ -30,8 +30,8 @@ setup(
     name="irides",
     url="https://gitlab.com/irides-dev/irides",
     # key meta
-    version="1.0.2",
-    license="Apache License 2.0",
+    version="1.0.3",
+    license="MIT",
     description="""Irides provides references implementations for select linear time-invariant filters.""",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
@@ -50,11 +50,8 @@ setup(
         "Development Status :: 4 - Beta",
         "Environment :: Console",
         "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: Apache Software License",
+        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
@@ -67,7 +64,7 @@ setup(
     zip_safe=False,
     py_modules=[splitext(basename(path))[0] for path in glob("src/*.py")],
     # requirements and dependencies
-    python_requires=">=3.7",
-    install_requires=["numpy>=1.23"],
+    python_requires=">=3.10",
+    install_requires=["numpy>=1.23", "scipy"],
     extras_require={},
 )

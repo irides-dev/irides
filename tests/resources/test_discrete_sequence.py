@@ -225,4 +225,4 @@ class TestDiscreteSequenceObject(unittest.TestCase):
         self.assertSequenceEqual(
             list(test_indices[ns_truth]), list(correct_indices)
         )
-        self.assertTrue(np.all(test_indices[ns_truth == False]) == False)
+        self.assertTrue(all(idx is None for idx in test_indices[~ns_truth]))

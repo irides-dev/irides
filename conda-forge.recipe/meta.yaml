@@ -1,5 +1,5 @@
 {% set name = "irides" %}
-{% set version = "1.0.2" %}
+{% set version = "1.0.3" %}
 
 package:
   name: "{{ name|lower }}"
@@ -17,10 +17,11 @@ build:
 requirements:
   host:
     - pip
-    - python >=3.7
+    - python >=3.10
   run:
     - numpy >=1.23
-    - python >=3.7
+    - scipy
+    - python >=3.10
 
 test:
   imports:
@@ -32,8 +33,8 @@ test:
 
 about:
   home: "https://gitlab.com/irides-dev/irides"
-  license: Apache-2.0
-  license_family: "APACHE"
+  license: MIT
+  license_family: "MIT"
   license_file: LICENSE
   summary: Reference library for advanced eigenanalysis.
   dev_url: https://gitlab.com/irides-dev/irides
