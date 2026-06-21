@@ -229,7 +229,7 @@ def compute_mu_from_tau_and_splane_poles(
         np.real(1.0 / (np.exp(-poles_scaled[:, np.newaxis] / tau_arr[np.newaxis, :]) - 1.0)),
         axis=0,
     )
-    return float(result) if result.size == 1 else result
+    return result.item() if result.size == 1 else result
 
 
 # noinspection PyPep8Naming
@@ -313,7 +313,7 @@ def solve_for_tau_min_from_splane_poles(
     )
 
     # compute associated mu-min
-    mu_min = compute_mu_from_tau_and_splane_poles(tau_min, splane_poles)[0]
+    mu_min = compute_mu_from_tau_and_splane_poles(tau_min, splane_poles)
 
     # return
     return {
