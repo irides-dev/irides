@@ -223,10 +223,13 @@ def compute_mu_from_tau_and_splane_poles(
     """
 
     # compute and return
-    return np.sum(
-        np.real(1.0 / (np.exp(-np.outer(splane_poles * T, np.atleast_1d(1.0 / np.asarray(tau, dtype=float)))) - 1.0)),
+    tau_arr = np.atleast_1d(np.asarray(tau, dtype=float))
+    poles_scaled = np.asarray(splane_poles * T).ravel()
+    result = np.sum(
+        np.real(1.0 / (np.exp(-poles_scaled[:, np.newaxis] / tau_arr[np.newaxis, :]) - 1.0)),
         axis=0,
     )
+    return float(result) if result.size == 1 else result
 
 
 # noinspection PyPep8Naming

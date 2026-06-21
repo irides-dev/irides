@@ -19,4 +19,9 @@
 # pycharm related
 **/.idea
 **/.agent-reports
-job-*.log
+
+# logfile related
+**/*.log
+
+# publish artifacts (generated transiently by publish-to-irides)
+.version

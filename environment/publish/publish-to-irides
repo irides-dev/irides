@@ -64,7 +64,7 @@ def dispatch(dest_path: str, dry_run: bool, force: bool, clean_up: bool) -> int:
 
     # rsync
     rsync_path = shutil.which("rsync")
-    exclusions = [".git", ".idea", "dist", ".DS_Store", "__pycache__"]
+    exclusions = [".git", ".idea", "dist", ".DS_Store", "__pycache__", "*.log"]
     rsync_cmd = [
         rsync_path,
         "-avh",
