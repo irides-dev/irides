@@ -2,6 +2,10 @@
 
 The package's contents are based on _Signal Processing for Algorithmic Trading_ (to be published) by Jay Damask. 
 
+## 1.0.5
+
+- Compatibility fixes for Python 3.12 and NumPy 2.x.
+
 ## 1.0.4
 
 - Fixed missing `__init__.py` in `filter_signature_blocks` and `resources/special_designs`, making these subpackages properly importable.

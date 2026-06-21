@@ -2,7 +2,7 @@
   "publisher_name": "Jay Damask",
   "source_repo": "git@gitlab.com:jaydamask/impulse-scape.git",
   "source_path": "code/irides-cabinet",
-  "source_commit": "4df3a63f",
-  "package_version": "1.0.4",
-  "publish_time_utc": "2026-06-21T17:14:33Z"
+  "source_commit": "7b3aaf06",
+  "package_version": "1.0.5",
+  "publish_time_utc": "2026-06-21T17:28:21Z"
 }
